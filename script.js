@@ -200,4 +200,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('right-button').addEventListener('touchstart', moveRight);
     document.getElementById('rotate-button').addEventListener('touchstart', rotate);
     document.getElementById('down-button').addEventListener('touchstart', moveDown);
+
+    document.getElementById('left-button').addEventListener('touchstart', preventZoom);
+    document.getElementById('right-button').addEventListener('touchstart', preventZoom);
+    document.getElementById('rotate-button').addEventListener('touchstart', preventZoom);
+    document.getElementById('down-button').addEventListener('touchstart', preventZoom);
+
+    function preventZoom(event) {
+        if (event.touches.length > 1) {
+            event.preventDefault();
+        }
+    }
 });
