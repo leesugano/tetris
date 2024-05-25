@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return div;
     });
 
+    // Add base rows to prevent falling off the grid
     for (let i = 0; i < 10; i++) {
         const div = document.createElement('div');
         div.classList.add('taken');
@@ -62,24 +63,20 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const theTetrominoes = [lTetromino, zTetromino, tTetromino, oTetromino, iTetromino];
-
     let random = Math.floor(Math.random() * theTetrominoes.length);
     let current = theTetrominoes[random][currentRotation];
-    let currentColor = colors[Math.floor(Math.random() * colors.length)];
 
     function draw() {
         current.forEach(index => {
-            const square = squares[currentPosition + index];
-            square.style.backgroundColor = currentColor;
-            square.classList.add('block');
+            squares[currentPosition + index].classList.add('block');
+            squares[currentPosition + index].style.backgroundColor = colors[random];
         });
     }
 
     function undraw() {
         current.forEach(index => {
-            const square = squares[currentPosition + index];
-            square.classList.remove('block');
-            square.style.backgroundColor = '';
+            squares[currentPosition + index].classList.remove('block');
+            squares[currentPosition + index].style.backgroundColor = '';
         });
     }
 
@@ -108,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
             current.forEach(index => squares[currentPosition + index].classList.add('taken'));
             random = Math.floor(Math.random() * theTetrominoes.length);
             current = theTetrominoes[random][currentRotation];
-            currentColor = colors[Math.floor(Math.random() * colors.length)];
             currentPosition = 4;
             draw();
             addScore();
@@ -150,58 +146,45 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < 199; i += width) {
             const row = [i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7, i + 8, i + 9];
             if (row.every(index => squares[index].classList.contains('taken'))) {
+                score += 10;
+                scoreDisplay.innerHTML = score;
                 row.forEach(index => {
-                    squares[index].classList.add('explode');
+                    squares[index].classList.remove('taken');
+                    squares[index].classList.remove('block');
+                    squares[index].style.backgroundColor = '';
                 });
-
-                setTimeout(() => {
-                    row.forEach(index => {
-                        squares[index].classList.remove('taken', 'block', 'explode');
-                        squares[index].style.backgroundColor = '';
-                    });
-
-                    const squaresRemoved = squares.splice(i, width);
-                    squares = squaresRemoved.concat(squares);
-                    squares.forEach(cell => grid.appendChild(cell));
-
-                    score += 10;
-                    scoreDisplay.innerHTML = score;
-                }, 500);
+                const squaresRemoved = squares.splice(i, width);
+                squares = squaresRemoved.concat(squares);
+                squares.forEach(cell => grid.appendChild(cell));
             }
         }
     }
 
-    function saveHighScore(score, name) {
-        const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
-        highScores.push({ score, name });
-        highScores.sort((a, b) => b.score - a.score);
-        highScores.splice(10);
-        localStorage.setItem('highScores', JSON.stringify(highScores));
-        displayHighScores();
-    }
-
-    function displayHighScores() {
-        const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
-        highScoresList.innerHTML = highScores
-            .filter(scoreEntry => scoreEntry.name && scoreEntry.score)
-            .map((scoreEntry, index) => `<li class="list-group-item">${index + 1}. ${scoreEntry.name} - ${scoreEntry.score}</li>`)
-            .join('');
-    }
-
     function gameOver() {
         if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
-            scoreDisplay.innerHTML = 'end';
             clearInterval(timerId);
+            document.removeEventListener('keydown', control);
             nameModal.show();
+            saveHighScore();
         }
     }
 
-    nameForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const playerName = playerNameInput.value;
-        saveHighScore(score, playerName);
-        nameModal.hide();
-    });
+    function saveHighScore() {
+        const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+        const newScore = {
+            score: score,
+            name: playerNameInput.value || 'Anonymous'
+        };
+        highScores.push(newScore);
+        highScores.sort((a, b) => b.score - a.score);
+        highScores.splice(10);
+        localStorage.setItem('highScores', JSON.stringify(highScores));
+        displayHighScores(highScores);
+    }
+
+    function displayHighScores(highScores) {
+        highScoresList.innerHTML = highScores.map(score => `<li class="list-group-item">${score.name} - ${score.score}</li>`).join('');
+    }
 
     startBtn.addEventListener('click', () => {
         if (timerId) {
@@ -210,9 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             draw();
             timerId = setInterval(moveDown, 1000);
-            displayHighScores();
+            document.addEventListener('keydown', control);
         }
     });
 
-    displayHighScores();
+    document.getElementById('left-button').addEventListener('touchstart', moveLeft);
+    document.getElementById('right-button').addEventListener('touchstart', moveRight);
+    document.getElementById('rotate-button').addEventListener('touchstart', rotate);
+    document.getElementById('down-button').addEventListener('touchstart', moveDown);
 });

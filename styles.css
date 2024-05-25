@@ -47,11 +47,44 @@ body {
     margin-bottom: 20px;
 }
 
+#touch-controls {
+    display: none;
+}
+
+#touch-controls button {
+    position: absolute;
+    background: transparent;
+    border: none;
+    width: 33%;
+    height: 33%;
+    opacity: 0.5;
+}
+
+#left-button {
+    left: 0;
+    top: 33%;
+}
+
+#right-button {
+    right: 0;
+    top: 33%;
+}
+
+#rotate-button {
+    left: 33%;
+    top: 0;
+}
+
+#down-button {
+    left: 33%;
+    bottom: 0;
+}
+
 @media (min-width: 768px) {
     #game-board {
-        max-width: 600px;
-        margin-left: 0px;
-        margin-right: 170px;
+        max-width: 600px; /* Tamanho máximo para dispositivos maiores */
+        margin-left: 0;
+        margin-right: 60px;
     }
     .container {
         display: flex;
@@ -79,4 +112,10 @@ body {
 
 .explode {
     animation: explode 0.5s ease-out forwards;
+}
+
+@media (max-width: 767px) {
+    #touch-controls {
+        display: block;
+    }
 }
