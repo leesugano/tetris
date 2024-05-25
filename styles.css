@@ -82,7 +82,7 @@ body {
 
 @media (min-width: 768px) {
     #game-board {
-        max-width: 600px; /* Tamanho máximo para dispositivos maiores */
+        max-width: 600px;
         margin-left: 0;
         margin-right: 60px;
     }

@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return div;
     });
 
-    // Add base rows to prevent falling off the grid
     for (let i = 0; i < 10; i++) {
         const div = document.createElement('div');
         div.classList.add('taken');
