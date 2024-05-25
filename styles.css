@@ -84,7 +84,7 @@ body {
     #game-board {
         max-width: 600px;
         margin-left: 0;
-        margin-right: 60px;
+        margin-right: 170px;
     }
     .container {
         display: flex;
