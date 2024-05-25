@@ -58,6 +58,10 @@ body {
     width: 33%;
     height: 33%;
     opacity: 0.5;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
 }
 
 #left-button {
